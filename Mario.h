@@ -149,5 +149,5 @@ public:
 	void SetLevel(int l);
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 
-	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	void GetBoundingBox(float& left, float& top, float& right, float& bottom); 
 };

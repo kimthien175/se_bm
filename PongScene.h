@@ -27,6 +27,8 @@ public:
 	virtual void Unload();
 
 	LPGAMEOBJECT GetBall() { return ball; }
+	LPGAMEOBJECT GetPaddle0() { return paddle0; }
+	LPGAMEOBJECT GetPaddle1() { return paddle1; }
 
 	void Clear();
 	void PurgeDeletedObjects();

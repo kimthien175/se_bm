@@ -5,7 +5,8 @@
 #include "Sprites.h"
 #include "Debug.h"
 #include "PongAssetsIDs.h"
-#include "Paddle.h"
+#include "Paddle0.h"
+#include "Paddle1.h"
 #include "Ball.h"
 #include <fstream>
 
@@ -71,8 +72,8 @@ void PongScene::_ParseSection_OBJECTS(string line) {
 	float y = (float)atof(tokens[2].c_str());
 
 	switch (object_type) {
-		case OBJECT_TYPE_PADDLE_0:		paddle0 = new Paddle(x, y); break;
-		case OBJECT_TYPE_PADDLE_1: 	paddle1 = new Paddle(x, y); break;
+		case OBJECT_TYPE_PADDLE_0:		paddle0 = new Paddle0(x, y); break;
+		case OBJECT_TYPE_PADDLE_1: 	paddle1 = new Paddle1(x, y); break;
 		case OBJECT_TYPE_BALL:				ball = new Ball(x, y); break;
 		default:
 			DebugOut(L"[ERROR] Invalid object type: %d\n", object_type);
@@ -105,7 +106,7 @@ void PongScene::LoadAssets(LPCWSTR assetFile) {
 		if (line[0] == '#') continue;	// skip comment lines	
 
 		if (line == "[SPRITES]") { section = ASSETS_SECTION_SPRITES; continue; };
-		//if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
+		if (line == "[ANIMATIONS]") { section = ASSETS_SECTION_ANIMATIONS; continue; };
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -173,15 +174,43 @@ void PongScene::Update(DWORD dt) {
 }
 
 void PongScene::Render() {
+	paddle0->Render();
+	paddle1->Render();
+	ball->Render();
+}
+
+void PongScene::Unload() {
+	// use when ?
+	DebugOut(L"[INFO] Scene %d unloaded! \n", id);
+}
+
+void PongScene::Clear() {
+	delete paddle0;
+	delete paddle1;
+	delete ball;
+	paddle0 = NULL;
+	paddle1 = NULL;
+	ball = NULL;
+}
+
+void PongScene::PurgeDeletedObjects() {
+	if (paddle0->IsDeleted()) {
+		delete paddle0;
+		paddle0 = NULL;
+	}
+
+	if (paddle1->IsDeleted()) {
+		delete paddle1;
+		paddle1 = NULL;
+	}
+
+	if (ball->IsDeleted()) {
+		delete ball;
+		ball = NULL;
+	}
 
 }
 
-void PongScene::Unload() {}
-
-void PongScene::Clear() {}
-
-void PongScene::PurgeDeletedObjects() {}
-
 bool PongScene::IsGameObjectDeleted(const LPGAMEOBJECT& o) {
-	return false;
+	return o == NULL;
 }
