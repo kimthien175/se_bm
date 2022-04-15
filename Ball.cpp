@@ -3,6 +3,7 @@
 #include "math.h"
 #include <stdlib.h>   
 #include <time.h>  
+#include "Paddle.h"
 using namespace std;
 
 Ball::Ball(float x, float y): CGameObject(x,y) {
@@ -21,9 +22,6 @@ void Ball::GetBoundingBox(float& left, float& top, float& right, float& bottom) 
 }
 
 void Ball::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
-	x += vx * dt;
-	y += vy * dt;
-	isTouchedWithScreenEdge();
 	CCollision::GetInstance()->Process(this, dt, coObjects);
 }
 
@@ -32,9 +30,21 @@ void Ball::Render() {
 	sprites->Get(ID_SPRITE_BALL)->Draw(x, y);
 }
 
+void Ball::OnNoCollision(DWORD dt) {
+	x += vx * dt;
+	y += vy * dt;
+	isTouchedWithScreenEdge();
+}
+
+void Ball::OnCollisionWith(LPCOLLISIONEVENT e) {
+	if (dynamic_cast<Paddle*>(e->obj))
+		OnCollisionWithPaddle(e);
+}
+
 bool Ball::isTouchedWithScreenEdge() {
 	int screenHeight = CGame::GetInstance()->GetBackBufferHeight();
 
+	// if touch vertical edges
 	if (y - BALL_BBOX_HEIGHT / 2 <= 0) {
 		y = BALL_BBOX_HEIGHT / 2;
 		vy = vy * (-1);
@@ -49,17 +59,25 @@ bool Ball::isTouchedWithScreenEdge() {
 
 	int screenWidth = CGame::GetInstance()->GetBackBufferWidth();
 
+	// if touch horizontal edges
+
 	if (x - BALL_BBOX_WIDTH / 2 <= 0) {
 		x = BALL_BBOX_WIDTH / 2;
-		vx = vx * (-1);
+		x = screenWidth / 2;
+		y = screenHeight / 2;
 		return true;
 	}
 
 	if (x + BALL_BBOX_HEIGHT / 2 >= screenWidth) {
 		x = screenWidth - BALL_BBOX_HEIGHT / 2;
-		vx = vx * (-1);
+		x = screenWidth / 2;
+		y = screenHeight / 2;
 		return true;
 	}
 
 	return false;
+}
+
+void Ball::OnCollisionWithPaddle(LPCOLLISIONEVENT e) {
+	vx = vx * (-1);
 }

@@ -165,8 +165,12 @@ void PongScene::Load() {
 void PongScene::Update(DWORD dt) {
 	paddle0->Update(dt);
 	paddle1->Update(dt);
-	ball->Update(dt);
 
+	vector<LPGAMEOBJECT> coObjects;
+	coObjects.push_back(paddle0);
+	coObjects.push_back(paddle1);
+
+	ball->Update(dt, &coObjects);
 
 	CGame::GetInstance()->SetCamPos(0,0);
 
