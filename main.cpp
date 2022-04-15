@@ -1,16 +1,16 @@
 /* =============================================================
 	INTRODUCTION TO GAME PROGRAMMING SE102
-	
+
 	SAMPLE 05 - SCENE MANAGER
 
 	This sample illustrates how to:
 
-		1/ Read scene (textures, sprites, animations and objects) from files 
+		1/ Read scene (textures, sprites, animations and objects) from files
 		2/ Handle multiple scenes in game
 
 	Key classes/functions:
 		CScene
-		CPlayScene		
+		CPlayScene
 
 
 HOW TO INSTALL Microsoft.DXSDK.D3DX
@@ -52,14 +52,13 @@ HOW TO INSTALL Microsoft.DXSDK.D3DX
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
-LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
+LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
 	return 0;
@@ -69,16 +68,14 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	Update world status for this frame
 	dt: time period between beginning of last frame and beginning of this frame
 */
-void Update(DWORD dt)
-{
+void Update(DWORD dt) {
 	CGame::GetInstance()->GetCurrentScene()->Update(dt);
 }
 
 /*
-	Render a frame 
+	Render a frame
 */
-void Render()
-{
+void Render() {
 	CGame* g = CGame::GetInstance();
 
 	ID3D10Device* pD3DDevice = g->GetDirect3DDevice();
@@ -99,8 +96,7 @@ void Render()
 	pSwapChain->Present(0, 0);
 }
 
-HWND CreateGameWindow(HINSTANCE hInstance, int nCmdShow, int ScreenWidth, int ScreenHeight)
-{
+HWND CreateGameWindow(HINSTANCE hInstance, int nCmdShow, int ScreenWidth, int ScreenHeight) {
 	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);
 
@@ -133,8 +129,7 @@ HWND CreateGameWindow(HINSTANCE hInstance, int nCmdShow, int ScreenWidth, int Sc
 			hInstance,
 			NULL);
 
-	if (!hWnd) 
-	{
+	if (!hWnd) {
 		OutputDebugString(L"[ERROR] CreateWindow failed");
 		DWORD ErrCode = GetLastError();
 		return FALSE;
@@ -146,17 +141,14 @@ HWND CreateGameWindow(HINSTANCE hInstance, int nCmdShow, int ScreenWidth, int Sc
 	return hWnd;
 }
 
-int Run()
-{
+int Run() {
 	MSG msg;
 	int done = 0;
 	ULONGLONG frameStart = GetTickCount64();
 	DWORD tickPerFrame = 1000 / MAX_FRAME_RATE;
 
-	while (!done)
-	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
+	while (!done) {
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			if (msg.message == WM_QUIT) done = 1;
 
 			TranslateMessage(&msg);
@@ -169,18 +161,17 @@ int Run()
 		// this frame: the frame we are about to render
 		DWORD dt = (DWORD)(now - frameStart);
 
-		if (dt >= tickPerFrame)
-		{
+		if (dt >= tickPerFrame) {
 			frameStart = now;
 
-			CGame::GetInstance()->ProcessKeyboard();			
+			CGame::GetInstance()->ProcessKeyboard();
 			Update(dt);
 			Render();
 
 			CGame::GetInstance()->SwitchScene();
 		}
 		else
-			Sleep(tickPerFrame - dt);	
+			Sleep(tickPerFrame - dt);
 	}
 
 	return 1;
@@ -202,9 +193,9 @@ int WINAPI WinMain(
 
 
 	//IMPORTANT: this is the only place where a hardcoded file name is allowed ! 
-	game->Load(L"mario-sample.txt");  
+	game->Load(L"pong\\pong.txt");
 
-	SetWindowPos(hWnd, 0, 0, 0, SCREEN_WIDTH*2, SCREEN_HEIGHT*2, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(hWnd, 0, 0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 	Run();
 

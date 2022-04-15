@@ -7,16 +7,16 @@
 #include "Texture.h"
 #include "Animations.h"
 #include "PlayScene.h"
+#include "PongScene.h"
 
-CGame * CGame::__instance = NULL;
+CGame* CGame::__instance = NULL;
 
 /*
 	Initialize DirectX, create a Direct3D device for rendering within the window, initial Sprite library for
 	rendering 2D images
 	- hWnd: Application window handle
 */
-void CGame::Init(HWND hWnd, HINSTANCE hInstance)
-{
+void CGame::Init(HWND hWnd, HINSTANCE hInstance) {
 	this->hWnd = hWnd;
 	this->hInstance = hInstance;
 
@@ -56,8 +56,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 		&pSwapChain,
 		&pD3DDevice);
 
-	if (hr != S_OK)
-	{
+	if (hr != S_OK) {
 		DebugOut((wchar_t*)L"[ERROR] D3D10CreateDeviceAndSwapChain has failed %s %d", _W(__FILE__), __LINE__);
 		return;
 	}
@@ -65,8 +64,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 	// Get the back buffer from the swapchain
 	ID3D10Texture2D* pBackBuffer;
 	hr = pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBackBuffer);
-	if (hr != S_OK)
-	{
+	if (hr != S_OK) {
 		DebugOut((wchar_t*)L"[ERROR] pSwapChain->GetBuffer has failed %s %d", _W(__FILE__), __LINE__);
 		return;
 	}
@@ -75,8 +73,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 	hr = pD3DDevice->CreateRenderTargetView(pBackBuffer, NULL, &pRenderTargetView);
 
 	pBackBuffer->Release();
-	if (hr != S_OK)
-	{
+	if (hr != S_OK) {
 		DebugOut((wchar_t*)L"[ERROR] CreateRenderTargetView has failed %s %d", _W(__FILE__), __LINE__);
 		return;
 	}
@@ -98,7 +95,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 	//
 	//
 
-	D3D10_SAMPLER_DESC desc; 
+	D3D10_SAMPLER_DESC desc;
 	desc.Filter = D3D10_FILTER_MIN_MAG_POINT_MIP_LINEAR;
 	desc.AddressU = D3D10_TEXTURE_ADDRESS_CLAMP;
 	desc.AddressV = D3D10_TEXTURE_ADDRESS_CLAMP;
@@ -118,8 +115,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 	// create the sprite object to handle sprite drawing 
 	hr = D3DX10CreateSprite(pD3DDevice, 0, &spriteObject);
 
-	if (hr != S_OK)
-	{
+	if (hr != S_OK) {
 		DebugOut((wchar_t*)L"[ERROR] D3DX10CreateSprite has failed %s %d", _W(__FILE__), __LINE__);
 		return;
 	}
@@ -155,8 +151,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance)
 	return;
 }
 
-void CGame::SetPointSamplerState()
-{
+void CGame::SetPointSamplerState() {
 	pD3DDevice->VSSetSamplers(0, 1, &pPointSamplerState);
 	pD3DDevice->GSSetSamplers(0, 1, &pPointSamplerState);
 	pD3DDevice->PSSetSamplers(0, 1, &pPointSamplerState);
@@ -167,8 +162,7 @@ void CGame::SetPointSamplerState()
 	NOTE: This function is very inefficient because it has to convert
 	from texture to sprite every time we need to draw it
 */
-void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int sprite_width, int sprite_height)
-{
+void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int sprite_width, int sprite_height) {
 	if (tex == NULL) return;
 
 	int spriteWidth = sprite_width;
@@ -179,8 +173,7 @@ void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int s
 	// Set the sprite’s shader resource view
 	sprite.pTexture = tex->getShaderResourceView();
 
-	if (rect == NULL)
-	{
+	if (rect == NULL) {
 		// top-left location in U,V coords
 		sprite.TexCoord.x = 0;
 		sprite.TexCoord.y = 0;
@@ -189,11 +182,10 @@ void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int s
 		sprite.TexSize.x = 1.0f;
 		sprite.TexSize.y = 1.0f;
 
-		if (spriteWidth==0) spriteWidth = tex->getWidth();
-		if (spriteHeight==0) spriteHeight = tex->getHeight();
+		if (spriteWidth == 0) spriteWidth = tex->getWidth();
+		if (spriteHeight == 0) spriteHeight = tex->getHeight();
 	}
-	else
-	{
+	else {
 		sprite.TexCoord.x = rect->left / (float)tex->getWidth();
 		sprite.TexCoord.y = rect->top / (float)tex->getHeight();
 
@@ -235,21 +227,19 @@ void CGame::Draw(float x, float y, LPTEXTURE tex, RECT* rect, float alpha, int s
 /*
 	Utility function to wrap D3DXCreateTextureFromFileEx
 */
-LPTEXTURE CGame::LoadTexture(LPCWSTR texturePath)
-{
+LPTEXTURE CGame::LoadTexture(LPCWSTR texturePath) {
 	ID3D10Resource* pD3D10Resource = NULL;
 	ID3D10Texture2D* tex = NULL;
 
 	// Retrieve image information first 
 	D3DX10_IMAGE_INFO imageInfo;
 	HRESULT hr = D3DX10GetImageInfoFromFile(texturePath, NULL, &imageInfo, NULL);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		DebugOut((wchar_t*)L"[ERROR] D3DX10GetImageInfoFromFile failed for  file: %s with error: %d\n", texturePath, hr);
 		return NULL;
 	}
 
-	D3DX10_IMAGE_LOAD_INFO info; 
+	D3DX10_IMAGE_LOAD_INFO info;
 	ZeroMemory(&info, sizeof(D3DX10_IMAGE_LOAD_INFO));
 	info.Width = imageInfo.Width;
 	info.Height = imageInfo.Height;
@@ -274,8 +264,7 @@ LPTEXTURE CGame::LoadTexture(LPCWSTR texturePath)
 		NULL);
 
 	// Make sure the texture was loaded successfully
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		DebugOut((wchar_t*)L"[ERROR] Failed to load texture file: %s with error: %d\n", texturePath, hr);
 		return NULL;
 	}
@@ -318,23 +307,19 @@ LPTEXTURE CGame::LoadTexture(LPCWSTR texturePath)
 	return new CTexture(tex, gSpriteTextureRV);
 }
 
-int CGame::IsKeyDown(int KeyCode)
-{
+int CGame::IsKeyDown(int KeyCode) {
 	return (keyStates[KeyCode] & 0x80) > 0;
 }
 
-void CGame::InitKeyboard()
-{
+void CGame::InitKeyboard() {
 	HRESULT hr = DirectInput8Create(this->hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (VOID**)&di, NULL);
-	if (hr != DI_OK)
-	{
+	if (hr != DI_OK) {
 		DebugOut(L"[ERROR] DirectInput8Create failed!\n");
 		return;
 	}
 
 	hr = di->CreateDevice(GUID_SysKeyboard, &didv, NULL);
-	if (hr != DI_OK)
-	{
+	if (hr != DI_OK) {
 		DebugOut(L"[ERROR] CreateDevice failed!\n");
 		return;
 	}
@@ -372,8 +357,7 @@ void CGame::InitKeyboard()
 	hr = didv->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
 
 	hr = didv->Acquire();
-	if (hr != DI_OK)
-	{
+	if (hr != DI_OK) {
 		DebugOut(L"[ERROR] DINPUT8::Acquire failed!\n");
 		return;
 	}
@@ -381,26 +365,21 @@ void CGame::InitKeyboard()
 	DebugOut(L"[INFO] Keyboard has been initialized successfully\n");
 }
 
-void CGame::ProcessKeyboard()
-{
+void CGame::ProcessKeyboard() {
 	HRESULT hr;
 
 	// Collect all key states first
 	hr = didv->GetDeviceState(sizeof(keyStates), keyStates);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		// If the keyboard lost focus or was not acquired then try to get control back.
-		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-		{
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) {
 			HRESULT h = didv->Acquire();
-			if (h == DI_OK)
-			{
+			if (h == DI_OK) {
 				DebugOut(L"[INFO] Keyboard re-acquired!\n");
 			}
 			else return;
 		}
-		else
-		{
+		else {
 			//DebugOut(L"[ERROR] DINPUT::GetDeviceState failed. Error: %d\n", hr);
 			return;
 		}
@@ -411,15 +390,13 @@ void CGame::ProcessKeyboard()
 	// Collect all buffered events
 	DWORD dwElements = KEYBOARD_BUFFER_SIZE;
 	hr = didv->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), keyEvents, &dwElements, 0);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		DebugOut(L"[ERROR] DINPUT::GetDeviceData failed. Error: %d\n", hr);
 		return;
 	}
 
 	// Scan through all buffered events, check if the key is pressed or released
-	for (DWORD i = 0; i < dwElements; i++)
-	{
+	for (DWORD i = 0; i < dwElements; i++) {
 		int KeyCode = keyEvents[i].dwOfs;
 		int KeyState = keyEvents[i].dwData;
 		if ((KeyState & 0x80) > 0)
@@ -438,8 +415,7 @@ void CGame::ProcessKeyboard()
 #define GAME_FILE_SECTION_TEXTURES 3
 
 
-void CGame::_ParseSection_SETTINGS(string line)
-{
+void CGame::_ParseSection_SETTINGS(string line) {
 	vector<string> tokens = split(line);
 
 	if (tokens.size() < 2) return;
@@ -449,20 +425,18 @@ void CGame::_ParseSection_SETTINGS(string line)
 		DebugOut(L"[ERROR] Unknown game setting: %s\n", ToWSTR(tokens[0]).c_str());
 }
 
-void CGame::_ParseSection_SCENES(string line)
-{
+void CGame::_ParseSection_SCENES(string line) {
 	vector<string> tokens = split(line);
 
 	if (tokens.size() < 2) return;
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);   // file: ASCII format (single-byte char) => Wide Char
 
-	LPSCENE scene = new CPlayScene(id, path);
+	LPSCENE scene = new PongScene(id, path);
 	scenes[id] = scene;
 }
 
-void CGame::_ParseSection_TEXTURES(string line)
-{
+void CGame::_ParseSection_TEXTURES(string line) {
 	vector<string> tokens = split(line);
 
 	if (tokens.size() < 2) return;
@@ -476,8 +450,7 @@ void CGame::_ParseSection_TEXTURES(string line)
 /*
 	Load game campaign file and load/initiate first scene
 */
-void CGame::Load(LPCWSTR gameFile)
-{
+void CGame::Load(LPCWSTR gameFile) {
 	DebugOut(L"[INFO] Start loading game file : %s\n", gameFile);
 
 	ifstream f;
@@ -487,8 +460,7 @@ void CGame::Load(LPCWSTR gameFile)
 	// current resource section flag
 	int section = GAME_FILE_SECTION_UNKNOWN;
 
-	while (f.getline(str, MAX_GAME_LINE))
-	{
+	while (f.getline(str, MAX_GAME_LINE)) {
 		string line(str);
 
 		if (line[0] == '#') continue;	// skip comment lines	
@@ -496,21 +468,19 @@ void CGame::Load(LPCWSTR gameFile)
 		if (line == "[SETTINGS]") { section = GAME_FILE_SECTION_SETTINGS; continue; }
 		if (line == "[TEXTURES]") { section = GAME_FILE_SECTION_TEXTURES; continue; }
 		if (line == "[SCENES]") { section = GAME_FILE_SECTION_SCENES; continue; }
-		if (line[0] == '[') 
-		{ 
-			section = GAME_FILE_SECTION_UNKNOWN; 
+		if (line[0] == '[') {
+			section = GAME_FILE_SECTION_UNKNOWN;
 			DebugOut(L"[ERROR] Unknown section: %s\n", ToLPCWSTR(line));
-			continue; 
+			continue;
 		}
 
 		//
 		// data section
 		//
-		switch (section)
-		{
-		case GAME_FILE_SECTION_SETTINGS: _ParseSection_SETTINGS(line); break;
-		case GAME_FILE_SECTION_SCENES: _ParseSection_SCENES(line); break;
-		case GAME_FILE_SECTION_TEXTURES: _ParseSection_TEXTURES(line); break;
+		switch (section) {
+			case GAME_FILE_SECTION_SETTINGS: _ParseSection_SETTINGS(line); break;
+			case GAME_FILE_SECTION_SCENES: _ParseSection_SCENES(line); break;
+			case GAME_FILE_SECTION_TEXTURES: _ParseSection_TEXTURES(line); break;
 		}
 	}
 	f.close();
@@ -520,9 +490,8 @@ void CGame::Load(LPCWSTR gameFile)
 	SwitchScene();
 }
 
-void CGame::SwitchScene()
-{
-	if (next_scene < 0 || next_scene == current_scene) return; 
+void CGame::SwitchScene() {
+	if (next_scene < 0 || next_scene == current_scene) return;
 
 	DebugOut(L"[INFO] Switching to scene %d\n", next_scene);
 
@@ -537,13 +506,11 @@ void CGame::SwitchScene()
 	s->Load();
 }
 
-void CGame::InitiateSwitchScene(int scene_id)
-{
+void CGame::InitiateSwitchScene(int scene_id) {
 	next_scene = scene_id;
 }
 
-CGame::~CGame()
-{
+CGame::~CGame() {
 	pBlendStateAlpha->Release();
 	spriteObject->Release();
 	pRenderTargetView->Release();
@@ -551,8 +518,7 @@ CGame::~CGame()
 	pD3DDevice->Release();
 }
 
-CGame* CGame::GetInstance()
-{
+CGame* CGame::GetInstance() {
 	if (__instance == NULL) __instance = new CGame();
 	return __instance;
 }

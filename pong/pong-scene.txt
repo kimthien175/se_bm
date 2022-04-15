@@ -1,0 +1,22 @@
+# list of object assets to load in this scene
+[ASSETS]
+pong\paddle0.txt
+pong\paddle1.txt
+pong\ball.txt
+#
+[OBJECTS]
+# type	x	y	extra_settings per object type
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
+# See OBJECT_TYPE constants in AssetIDs.h
+
+
+# PADDLE 0
+0	10	100
+
+# PADDLE 1
+1	300	100
+
+# BALL  
+2	100	100
+
+

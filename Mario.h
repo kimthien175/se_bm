@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 
 #include "Animation.h"
@@ -101,18 +101,17 @@
 
 #define MARIO_UNTOUCHABLE_TIME 2500
 
-class CMario : public CGameObject
-{
+class CMario : public CGameObject {
 	BOOLEAN isSitting;
 	float maxVx;
 	float ax;				// acceleration on x 
 	float ay;				// acceleration on y 
 
-	int level; 
-	int untouchable; 
+	int level;
+	int untouchable;
 	ULONGLONG untouchable_start;
 	BOOLEAN isOnPlatform;
-	int coin; 
+	int coin;
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
@@ -122,12 +121,11 @@ class CMario : public CGameObject
 	int GetAniIdSmall();
 
 public:
-	CMario(float x, float y) : CGameObject(x, y)
-	{
+	CMario(float x, float y) : CGameObject(x, y) {
 		isSitting = false;
 		maxVx = 0.0f;
 		ax = 0.0f;
-		ay = MARIO_GRAVITY; 
+		ay = MARIO_GRAVITY;
 
 		level = MARIO_LEVEL_BIG;
 		untouchable = 0;
@@ -139,12 +137,11 @@ public:
 	void Render();
 	void SetState(int state);
 
-	int IsCollidable()
-	{ 
-		return (state != MARIO_STATE_DIE); 
+	int IsCollidable() {
+		return (state != MARIO_STATE_DIE);
 	}
 
-	int IsBlocking() { return (state != MARIO_STATE_DIE && untouchable==0); }
+	int IsBlocking() { return (state != MARIO_STATE_DIE && untouchable == 0); }
 
 	void OnNoCollision(DWORD dt);
 	void OnCollisionWith(LPCOLLISIONEVENT e);
