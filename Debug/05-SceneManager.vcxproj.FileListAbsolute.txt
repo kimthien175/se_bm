@@ -1,1 +1,0 @@
-C:\Users\kimth\gamedev-intro-tutorials\05-SceneManager\Debug\05-SceneManager.vcxproj.CopyComplete
