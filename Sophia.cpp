@@ -20,6 +20,8 @@ void Sophia::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 
 	x += vx * dt;
 	y += vy * dt;
+
+	FixStandingOnPlatform();
 }
 
 void Sophia::SetRotation() {
@@ -63,6 +65,7 @@ void Sophia::UpdatePointingUp(DWORD dt) {
 		if (elapsedPointingTime < SOPHIA_POINTING_UP_FRAMETIME) {
 			_isPointingUp = false;
 			elapsedPointingTime = 0;
+			pointingStep = 0;
 
 			return;
 		}
@@ -160,6 +163,7 @@ void Sophia::UpdateWheelIndex() {
 // There are 4 frames of wheels 0->3
 
 void Sophia::UpdateSpriteFrame(DWORD dt) {
+
 	UpdateWheelIndex();
 
 	UpdateOscillationHeight(dt);
@@ -198,6 +202,15 @@ int Sophia::SwitchPointingUpFrame() {
 
 	// default
 	return ID_SPRITE_SOPHIA_HIGH;
+}
+
+void Sophia::FixStandingOnPlatform() {
+	if (isOnPlatform) {
+		halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
+
+		if (floor(y - halfHeight) - platformHeight  != -1 ) 
+			y = platformHeight + halfHeight;
+	}
 }
 
 void Sophia::UpdateOscillationHeight(DWORD dt) {

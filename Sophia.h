@@ -5,7 +5,7 @@
 #define SOPHIA_HIT_TIME	500
 #define SOPHIA_WHEELS_FRAMETIME 80
 
-#define SOPHIA_POINTING_UP_FRAMETIME 30
+#define SOPHIA_POINTING_UP_FRAMETIME 20
 
 // stand for pi/6
 #define SOPHIA_ROT_FRAMETIME 30
@@ -27,6 +27,8 @@
 
 class Sophia : public CGameObject {
 	bool isOnPlatform = true;
+	int platformHeight = 96;
+	float halfHeight;
 	//bool isLanding = false;
 	//bool isJumping = false;
 
@@ -65,8 +67,13 @@ class Sophia : public CGameObject {
 	void UpdatePointingUp(DWORD dt);
 
 	int SwitchPointingUpFrame();
+	void FixStandingOnPlatform();
 public:
-	Sophia(float x, float y) : CGameObject(x, y) {}
+	Sophia(float x, float y) : CGameObject(x, y) {
+		
+		FixStandingOnPlatform();
+	}
+
 	void Render();
 
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);

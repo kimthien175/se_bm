@@ -7,7 +7,7 @@ bm\sophia.txt
 # type	x	y	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
 # See OBJECT_TYPE constants in AssetIDs.h
-0	100	105
+0	100	80
 
 # tex_id
 [MAP]

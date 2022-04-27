@@ -189,7 +189,7 @@ void BMScene::Update(DWORD dt) {
 
 void BMScene::Render() {
 	// render map
-	//map->Draw();
+	map->Draw();
 
 	// render game obj
 	sophia->Render();
