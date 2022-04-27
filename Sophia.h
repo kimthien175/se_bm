@@ -9,33 +9,30 @@
 
 // stand for pi/6
 #define SOPHIA_ROT_FRAMETIME 30
-//#define SOPHIA_OSCILLATION_PHASE 0.011
 
-#define SOPHIA_HORIZONTAL_SPEED 0.08f
+#define SOPHIA_JUMP_STEP_TIME 50
+#define SOPHIA_JUMP_SPEED 0.45f
 
-#define SOPHIA_STATE_IDLE 0
+#define SOPHIA_HORIZONTAL_SPEED 0.2f
+#define SOPHIA_HORIZONTAL_ACCELERATION 0.0005f
+#define SOPHIA_GRAVITATIONAL_ACCELERATION 0.002f
+
+//#define SOPHIA_STATE_IDLE 0
 
 //MONO
-#define SOPHIA_STATE_MOVE_LEFT 1
-#define SOPHIA_STATE_MOVE_RIGHT 2
-#define SOPHIA_STATE_LOOK_UP
+#define SOPHIA_STATE_ACCELERATE_LEFT 1
+#define SOPHIA_STATE_ACCELERATE_RIGHT 2
+//#define SOPHIA_STATE_LOOK_UP
 #define SOPHIA_STATE_STOP_ACCELERATING 4
 
 //DOUBLE
-#define SOPHIA_STATE_MOVE_LEFT_LOOK_UP
-#define SOPHIA_STATE_MOVE_RIGHT_LOOK_UP
+//#define SOPHIA_STATE_MOVE_LEFT_LOOK_UP
+//#define SOPHIA_STATE_MOVE_RIGHT_LOOK_UP
 
 class Sophia : public CGameObject {
-	bool isOnPlatform = true;
+	bool _isOnPlatform = true;
 	int platformHeight = 96;
 	float halfHeight;
-	//bool isLanding = false;
-	//bool isJumping = false;
-
-
-	// gun state
-	// jump state
-	// run state
 
 	bool _isPointingUp = false;
 	int pointingStep = 0;
@@ -59,7 +56,7 @@ class Sophia : public CGameObject {
 	int spWheelLastFrameTime = -1;
 	ULONGLONG spNow = 0;
 
-	void UpdateSpriteFrame(DWORD dt);
+	void UpdateActions(DWORD dt);
 
 	void UpdateOscillationHeight(DWORD dt);
 	void UpdateRotation(DWORD dt);
@@ -68,9 +65,15 @@ class Sophia : public CGameObject {
 
 	int SwitchPointingUpFrame();
 	void FixStandingOnPlatform();
+
+
+	void UpdateJump(DWORD dt);
+	bool isJumping = false;
+	DWORD elapsedJumpTime = 0;
+	int jumpStep = 0;
+
 public:
 	Sophia(float x, float y) : CGameObject(x, y) {
-		
 		FixStandingOnPlatform();
 	}
 
@@ -82,12 +85,17 @@ public:
 	bool isMovingLeft() { return vx<0; }
 	bool isMovingRight() { return vx > 0; }
 	bool isLookingLeft() { return _isLookingLeft; }
-	//bool isPointingUp() { return _isPointingUp; }
 	bool isRotating() { return _isRotating; }
-	//bool isAcceleratingPoitingUp() { return  _isAcceleratingPointingUp; }
+	bool isOnPlatform() { return _isOnPlatform; }
 
+	// Rotate
 	void SetRotation();
+
+	// Pointing Up
 	void AcceleratePointingUp() { _isAcceleratingPointingUp = true; }
 	void RelasePointingUp() {  _isAcceleratingPointingUp = false; }
+
+	// Jump
+	void SetJump();
 };
 

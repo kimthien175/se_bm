@@ -5,18 +5,39 @@ void Sophia::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 void Sophia::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 	switch (state) {
-		case SOPHIA_STATE_MOVE_LEFT:
-			vx = -SOPHIA_HORIZONTAL_SPEED;
+		case SOPHIA_STATE_ACCELERATE_LEFT:
+			vx -= SOPHIA_HORIZONTAL_ACCELERATION * dt;
+			if (vx < -SOPHIA_HORIZONTAL_SPEED)
+				vx = -SOPHIA_HORIZONTAL_SPEED;
+
 			break;
-		case SOPHIA_STATE_MOVE_RIGHT:
-			vx = SOPHIA_HORIZONTAL_SPEED;
+
+		case SOPHIA_STATE_ACCELERATE_RIGHT:
+			vx += SOPHIA_HORIZONTAL_ACCELERATION * dt;
+
+			if (vx > SOPHIA_HORIZONTAL_SPEED)
+				vx = SOPHIA_HORIZONTAL_SPEED;
+
 			break;
+
 		case SOPHIA_STATE_STOP_ACCELERATING:
-			vx = 0;
+			if (isMovingLeft()) {
+				vx += SOPHIA_HORIZONTAL_ACCELERATION * dt;
+				if (vx > 0) vx = 0;
+			}
+			else if (isMovingRight()) {
+				vx -= SOPHIA_HORIZONTAL_ACCELERATION * dt;
+				if (vx < 0) vx = 0;
+			}
 			break;
 	}
 
-	UpdateSpriteFrame(dt);
+	UpdateActions(dt);
+
+	// Landing on platform
+	if (!_isOnPlatform) {
+		vy -= SOPHIA_GRAVITATIONAL_ACCELERATION * dt;
+	}
 
 	x += vx * dt;
 	y += vy * dt;
@@ -56,7 +77,7 @@ void Sophia::UpdatePointingUp(DWORD dt) {
 
 			pointingStep = 4;
 			elapsedPointingTime = SOPHIA_POINTING_UP_FRAMETIME * 8;
-		} 
+		}
 	}
 	else if (_isPointingUp) {
 		// release and set up as new
@@ -162,7 +183,7 @@ void Sophia::UpdateWheelIndex() {
 
 // There are 4 frames of wheels 0->3
 
-void Sophia::UpdateSpriteFrame(DWORD dt) {
+void Sophia::UpdateActions(DWORD dt) {
 
 	UpdateWheelIndex();
 
@@ -172,14 +193,16 @@ void Sophia::UpdateSpriteFrame(DWORD dt) {
 
 	UpdatePointingUp(dt);
 
-	spriteRowSetID = isOnPlatform ? (
-			_isPointingUp ? 
-				SwitchPointingUpFrame()
-				:
-				(isOscillationHeightLow ?
-					(isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED):
-					(isFrameRot ? ID_SPRITE_SOPHIA_HIGH_ROT : ID_SPRITE_SOPHIA_HIGH)
-				)
+	UpdateJump(dt);
+
+	spriteRowSetID = _isOnPlatform ? (
+		_isPointingUp ?
+		SwitchPointingUpFrame()
+		:
+		(isOscillationHeightLow ?
+			(isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED) :
+			(isFrameRot ? ID_SPRITE_SOPHIA_HIGH_ROT : ID_SPRITE_SOPHIA_HIGH)
+			)
 		)
 
 		: ID_SPRITE_SOPHIA_HIGH;
@@ -187,9 +210,9 @@ void Sophia::UpdateSpriteFrame(DWORD dt) {
 
 int Sophia::SwitchPointingUpFrame() {
 	switch (pointingStep) {
-		case 0: 
+		case 0:
 			return ID_SPRITE_SOPHIA_HIGH;
-		case 1: 
+		case 1:
 			return ID_SPRITE_SOPHIA_HIGH_DIA;
 		case 2:
 			return ID_SPRITE_SOPHIA_HIGHER_DIA;
@@ -205,23 +228,65 @@ int Sophia::SwitchPointingUpFrame() {
 }
 
 void Sophia::FixStandingOnPlatform() {
-	if (isOnPlatform) {
-		halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
+	halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
 
-		if (floor(y - halfHeight) - platformHeight  != -1 ) 
+	if (_isOnPlatform) {
+		if (floor(y - halfHeight) - platformHeight != -1) {
 			y = platformHeight + halfHeight;
+		}
+	}
+	else {
+		if (floor(y - halfHeight) - platformHeight < -1) {
+			y = platformHeight + halfHeight;
+			vy = 0;
+			_isOnPlatform = true;
+		}
 	}
 }
 
+// below steps occur while isJumping, but step 1 & 4 occur while _isOnPlatform
+// low:1 -> JUMP:2 -> MED (TOP):3 -> LOW (ON LANDING):4 
+void Sophia::UpdateJump(DWORD dt) {
+	if (isJumping) {
+		if (jumpStep < 3) {
+			elapsedJumpTime += dt;
+
+			if (elapsedJumpTime < SOPHIA_JUMP_STEP_TIME) {
+				jumpStep = 1;
+				return;
+			}
+
+			if (elapsedJumpTime < SOPHIA_JUMP_STEP_TIME * 2) {
+				jumpStep = 2;
+				vy = SOPHIA_JUMP_SPEED;
+				_isOnPlatform = false;
+				return;
+			}
+
+			jumpStep = 3;
+			elapsedJumpTime = 0;
+		}
+		else if (_isOnPlatform) {
+			elapsedJumpTime += dt;
+			jumpStep = 4;
+			if (elapsedJumpTime > SOPHIA_JUMP_STEP_TIME) {
+				isJumping = false;
+			}
+		}
+	}
+}
+
+void Sophia::SetJump() {
+	isJumping = true;
+	jumpStep = 0;
+	elapsedJumpTime = 0;
+}
+
 void Sophia::UpdateOscillationHeight(DWORD dt) {
-	if (vx != 0 && isOnPlatform) isOscillationHeightLow = wheelIndex % 2 != 0;
+	if (vx != 0 && _isOnPlatform) isOscillationHeightLow = wheelIndex % 2 != 0;
 	else  isOscillationHeightLow = false;
 }
 
-int spTempSpriteID;
-
 void Sophia::Render() {
-	spTempSpriteID = (_isLookingLeft ? (spriteRowSetID + wheelIndex) : (spriteRowSetID + wheelIndex + 4));
-
-	CSprites::GetInstance()->Get(spTempSpriteID)->Draw(x, y);
+	CSprites::GetInstance()->Get(_isLookingLeft ? (spriteRowSetID + wheelIndex) : (spriteRowSetID + wheelIndex + 4))->Draw(x, y);
 }

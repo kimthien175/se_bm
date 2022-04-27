@@ -7,18 +7,22 @@ void BMKeyHandler::KeyState(BYTE* states) {
 	Sophia* sophia = ((BMScene*)game->GetCurrentScene())->GetSophia();
 
 	if (game->IsKeyDown(DIK_RIGHT)) {
-		sophia->SetState(SOPHIA_STATE_MOVE_RIGHT);
+		sophia->SetState(SOPHIA_STATE_ACCELERATE_RIGHT);
 
 		if (sophia->isLookingLeft() && !sophia->isRotating()) sophia->SetRotation();
 	}
 	else if (game->IsKeyDown(DIK_LEFT)) {
-		sophia->SetState(SOPHIA_STATE_MOVE_LEFT);
+		sophia->SetState(SOPHIA_STATE_ACCELERATE_LEFT);
 
 		if (!sophia->isLookingLeft() && !sophia->isRotating()) sophia->SetRotation();
 	}
 
 	if (game->IsKeyDown(DIK_UP)) {
 		sophia->AcceleratePointingUp();
+	}
+
+	if (game->IsKeyDown(DIK_SPACE)) {
+		if (sophia->isOnPlatform()) sophia->SetJump();
 	}
 }
 
