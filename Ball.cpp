@@ -59,10 +59,15 @@ bool Ball::isTouchedWithScreenEdge() {
 
 	int screenWidth = CGame::GetInstance()->GetBackBufferWidth();
 
-	// if touch horizontal edges
+	// if touch horizontal edges, move the ball to the screen center
 
 	if (x - BALL_BBOX_WIDTH / 2 <= 0) {
 		x = BALL_BBOX_WIDTH / 2;
+		srand(time(NULL));
+		int randDegreeAngle = rand() % 360;
+		float randAngle = randDegreeAngle * 1.0 / 360 * 2 * 3.14;
+		vx = cos(randAngle) * BALL_SPEED;
+		vy = sin(randAngle) * BALL_SPEED;
 		x = screenWidth / 2;
 		y = screenHeight / 2;
 		return true;
@@ -70,6 +75,11 @@ bool Ball::isTouchedWithScreenEdge() {
 
 	if (x + BALL_BBOX_HEIGHT / 2 >= screenWidth) {
 		x = screenWidth - BALL_BBOX_HEIGHT / 2;
+		srand(time(NULL));
+		int randDegreeAngle = rand() % 360;
+		float randAngle = randDegreeAngle * 1.0 / 360 * 2 * 3.14;
+		vx = cos(randAngle) * BALL_SPEED;
+		vy = sin(randAngle) * BALL_SPEED;
 		x = screenWidth / 2;
 		y = screenHeight / 2;
 		return true;

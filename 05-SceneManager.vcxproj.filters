@@ -19,11 +19,8 @@
     <Filter Include="Header Files\Games">
       <UniqueIdentifier>{b3ead1a1-ae46-42ab-83a3-e6ed8778ee1c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Games\Mario">
-      <UniqueIdentifier>{96c55bbe-8a24-4bed-8cb3-200a4985981a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Games\Pong">
-      <UniqueIdentifier>{743f102b-aaec-47fb-84cf-509d7f217256}</UniqueIdentifier>
+    <Filter Include="Header Files\Games\BlasterMaster">
+      <UniqueIdentifier>{9df4032d-93cc-4021-8776-5578b7a9d541}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,12 +31,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Animations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Brick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Coin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
@@ -54,18 +45,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Goomba.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleKeyEventHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,32 +54,23 @@
     <ClCompile Include="Textures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Portal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Paddle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PongScene.cpp">
+    <ClCompile Include="BMScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ball.cpp">
+    <ClCompile Include="BMKeyHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PongKeyHandler.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Paddle0.cpp">
+    <ClCompile Include="BMMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Paddle1.cpp">
+    <ClCompile Include="Sophia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,59 +111,29 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Paddle.h">
-      <Filter>Header Files\Games\Pong</Filter>
-    </ClInclude>
-    <ClInclude Include="Brick.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
-    <ClInclude Include="Coin.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
-    <ClInclude Include="Goomba.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
-    <ClInclude Include="Mario.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetIDs.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayScene.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleKeyEventHandler.h">
-      <Filter>Header Files\Games\Mario</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="debug.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="PongScene.h">
-      <Filter>Header Files\Games\Pong</Filter>
+    <ClInclude Include="BMScene.h">
+      <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
-    <ClInclude Include="Portal.h">
-      <Filter>Header Files\Games\Mario</Filter>
+    <ClInclude Include="BMKeyHandler.h">
+      <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
-    <ClInclude Include="Platform.h">
-      <Filter>Header Files\Games\Mario</Filter>
+    <ClInclude Include="BMAssetsIDs.h">
+      <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
-    <ClInclude Include="PongAssetsIDs.h">
-      <Filter>Header Files\Games\Pong</Filter>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PongKeyHandler.h">
-      <Filter>Header Files\Games\Pong</Filter>
+    <ClInclude Include="BMMap.h">
+      <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
-    <ClInclude Include="Ball.h">
-      <Filter>Header Files\Games\Pong</Filter>
-    </ClInclude>
-    <ClInclude Include="Paddle0.h">
-      <Filter>Header Files\Games\Pong</Filter>
-    </ClInclude>
-    <ClInclude Include="Paddle1.h">
-      <Filter>Header Files\Games\Pong</Filter>
+    <ClInclude Include="Sophia.h">
+      <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -45,8 +45,8 @@ class CGame
 
 	LPKEYEVENTHANDLER keyHandler;
 
-	float cam_x = 0.0f;
-	float cam_y = 0.0f;
+	float cam_x = 0;
+	float cam_y = 0;
 
 	HINSTANCE hInstance;
 
@@ -113,6 +113,7 @@ public:
 
 	void _ParseSection_TEXTURES(string line);
 
+	void GetViewCoord(float& x, float& y);
 
 	~CGame();
 };

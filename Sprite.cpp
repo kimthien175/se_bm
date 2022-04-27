@@ -1,7 +1,7 @@
 #include "Sprite.h"
+#include "Camera.h"
 
-CSprite::CSprite(int id, int left, int top, int right, int bottom, LPTEXTURE tex)
-{
+CSprite::CSprite(int id, int left, int top, int right, int bottom, LPTEXTURE tex) {
 	this->id = id;
 	this->left = left;
 	this->top = top;
@@ -18,8 +18,8 @@ CSprite::CSprite(int id, int left, int top, int right, int bottom, LPTEXTURE tex
 	sprite.TexCoord.x = this->left / texWidth;
 	sprite.TexCoord.y = this->top / texHeight;
 
-	int spriteWidth = (this->right - this->left + 1);
-	int spriteHeight = (this->bottom - this->top + 1);
+	int spriteWidth = this->right - this->left + 1;
+	int spriteHeight = this->bottom - this->top + 1;
 
 	sprite.TexSize.x = spriteWidth / texWidth;
 	sprite.TexSize.y = spriteHeight / texHeight;
@@ -30,23 +30,22 @@ CSprite::CSprite(int id, int left, int top, int right, int bottom, LPTEXTURE tex
 	D3DXMatrixScaling(&this->matScaling, (FLOAT)spriteWidth, (FLOAT)spriteHeight, 1.0f);
 }
 
-void CSprite::Draw(float x, float y)
-{
+void CSprite::Draw(float x, float y) {
 	CGame* g = CGame::GetInstance();
 	float cx, cy;
 	g->GetCamPos(cx, cy);
 
-	cx = (FLOAT)floor(cx);
-	cy = (FLOAT)floor(cy);
+	cx = floor(cx);
+	cy = floor(cy);
+
+	x = floor(x);
+	y = floor(y);
 
 	D3DXMATRIX matTranslation;
-	
-	x = (FLOAT)floor(x);
-	y = (FLOAT)floor(y);
 
-	D3DXMatrixTranslation(&matTranslation, x - cx, g->GetBackBufferHeight() - y + cy, 0.1f);
+	D3DXMatrixTranslation(&matTranslation, x - cx, y - cy, 0.1f);
 
-	this->sprite.matWorld = (this->matScaling * matTranslation);
+	this->sprite.matWorld = this->matScaling * matTranslation;
 
 	g->GetSpriteHandler()->DrawSpritesImmediate(&sprite, 1, 0, 0);
 }

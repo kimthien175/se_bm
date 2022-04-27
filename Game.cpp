@@ -6,8 +6,7 @@
 
 #include "Texture.h"
 #include "Animations.h"
-#include "PlayScene.h"
-#include "PongScene.h"
+#include "BMScene.h"
 
 CGame* CGame::__instance = NULL;
 
@@ -91,10 +90,6 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance) {
 	viewPort.TopLeftY = 0;
 	pD3DDevice->RSSetViewports(1, &viewPort);
 
-	//
-	//
-	//
-
 	D3D10_SAMPLER_DESC desc;
 	desc.Filter = D3D10_FILTER_MIN_MAG_POINT_MIP_LINEAR;
 	desc.AddressU = D3D10_TEXTURE_ADDRESS_CLAMP;
@@ -124,7 +119,7 @@ void CGame::Init(HWND hWnd, HINSTANCE hInstance) {
 
 	// Create the projection matrix using the values in the viewport
 	D3DXMatrixOrthoOffCenterLH(&matProjection,
-		(float)viewPort.TopLeftX,
+		(float)viewPort.TopLeftX,                                                                                                                                                                                                                                
 		(float)viewPort.Width,
 		(float)viewPort.TopLeftY,
 		(float)viewPort.Height,
@@ -425,6 +420,8 @@ void CGame::_ParseSection_SETTINGS(string line) {
 		DebugOut(L"[ERROR] Unknown game setting: %s\n", ToWSTR(tokens[0]).c_str());
 }
 
+#include "PlayScene.h"
+
 void CGame::_ParseSection_SCENES(string line) {
 	vector<string> tokens = split(line);
 
@@ -432,7 +429,7 @@ void CGame::_ParseSection_SCENES(string line) {
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);   // file: ASCII format (single-byte char) => Wide Char
 
-	LPSCENE scene = new PongScene(id, path);
+	LPSCENE scene = new BMScene(id, path);
 	scenes[id] = scene;
 }
 
@@ -508,6 +505,11 @@ void CGame::SwitchScene() {
 
 void CGame::InitiateSwitchScene(int scene_id) {
 	next_scene = scene_id;
+}
+
+void CGame::GetViewCoord(float& x, float& y) {
+	x = x - cam_x;
+	y = cam_y - y;
 }
 
 CGame::~CGame() {

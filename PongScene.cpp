@@ -178,6 +178,10 @@ void PongScene::Update(DWORD dt) {
 }
 
 void PongScene::Render() {
+	// Render background
+
+
+
 	paddle0->Render();
 	paddle1->Render();
 	ball->Render();

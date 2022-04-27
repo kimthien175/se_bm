@@ -1,0 +1,15 @@
+[SETTINGS]
+start	1
+
+#id	type	file
+# type: 0: intro, 1: play scene 
+[SCENES]
+0	bm\intro.txt
+1	bm\bm_scene.txt
+
+# TEX_ID	FILE_PATH
+[TEXTURES]
+0	bm\map.png
+1	bm\map-3a.png
+2	bm\sophia.gif
+3	bm\sophia_top_low.png

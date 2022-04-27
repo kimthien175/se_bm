@@ -1,5 +1,6 @@
 #include "Paddle0.h"
 #include "PongAssetsIDs.h"
+#include "debug.h"
 
 void Paddle0::Render() {
 	CSprites* sprites = CSprites::GetInstance();
@@ -9,6 +10,6 @@ void Paddle0::Render() {
 	//RenderBoundingBox();
 
 	//DebugOutTitle(L"Coins: %d", coin);
-	//DebugOutTitle(L"Cam: %d %d", cx, cy);
+	DebugOutTitle(L"Paddle0: %f %f", x, y);
 
 }

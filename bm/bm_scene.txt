@@ -1,0 +1,15 @@
+# list of object assets to load in this scene
+[ASSETS]
+bm\sophia.txt
+
+#
+[OBJECTS]
+# type	x	y	extra_settings per object type
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
+# See OBJECT_TYPE constants in AssetIDs.h
+0	100	105
+
+# tex_id
+[MAP]
+0
+

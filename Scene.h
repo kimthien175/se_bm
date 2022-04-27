@@ -1,6 +1,7 @@
 #pragma once
 
 #include "KeyEventHandler.h"
+#include "BMMap.h"
 
 /*
 *  Abstract class for a game scene
@@ -11,7 +12,7 @@ protected:
 	LPKEYEVENTHANDLER key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
-
+	BMMap* map;
 public: 
 	CScene(int id, LPCWSTR filePath)
 	{
