@@ -22,7 +22,8 @@ void BMKeyHandler::KeyState(BYTE* states) {
 	}
 
 	if (game->IsKeyDown(DIK_SPACE)) {
-		if (sophia->isOnPlatform()) sophia->SetJump();
+		if (!sophia->isJumping()) 
+			sophia->SetJump();
 	}
 }
 

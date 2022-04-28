@@ -31,18 +31,19 @@ void Sophia::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 			}
 			break;
 	}
-
+	
 	UpdateActions(dt);
-
-	// Landing on platform
-	if (!_isOnPlatform) {
-		vy -= SOPHIA_GRAVITATIONAL_ACCELERATION * dt;
-	}
 
 	x += vx * dt;
 	y += vy * dt;
 
+	CheckLandingWhileJumping();
+
+	UpdateSpritesSet();
+
 	FixStandingOnPlatform();
+
+	//DebugOutTitle(L"%d", _isOnPlatform);
 }
 
 void Sophia::SetRotation() {
@@ -184,7 +185,6 @@ void Sophia::UpdateWheelIndex() {
 // There are 4 frames of wheels 0->3
 
 void Sophia::UpdateActions(DWORD dt) {
-
 	UpdateWheelIndex();
 
 	UpdateOscillationHeight(dt);
@@ -194,18 +194,6 @@ void Sophia::UpdateActions(DWORD dt) {
 	UpdatePointingUp(dt);
 
 	UpdateJump(dt);
-
-	spriteRowSetID = _isOnPlatform ? (
-		_isPointingUp ?
-		SwitchPointingUpFrame()
-		:
-		(isOscillationHeightLow ?
-			(isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED) :
-			(isFrameRot ? ID_SPRITE_SOPHIA_HIGH_ROT : ID_SPRITE_SOPHIA_HIGH)
-			)
-		)
-
-		: ID_SPRITE_SOPHIA_HIGH;
 }
 
 int Sophia::SwitchPointingUpFrame() {
@@ -227,57 +215,136 @@ int Sophia::SwitchPointingUpFrame() {
 	return ID_SPRITE_SOPHIA_HIGH;
 }
 
-void Sophia::FixStandingOnPlatform() {
-	halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
+float spTempHeightDelta;
 
+void Sophia::FixStandingOnPlatform() {
 	if (_isOnPlatform) {
-		if (floor(y - halfHeight) - platformHeight != -1) {
-			y = platformHeight + halfHeight;
+		halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
+		spTempHeightDelta = y - halfHeight - platformHeight;
+		if (abs(spTempHeightDelta) >=1) {
+			//y = platformHeight + halfHeight;
+			y -= spTempHeightDelta;
 		}
 	}
-	else {
-		if (floor(y - halfHeight) - platformHeight < -1) {
-			y = platformHeight + halfHeight;
-			vy = 0;
-			_isOnPlatform = true;
-		}
-	}
+	//else {
+	//	if (floor(y - halfHeight) - platformHeight < -1) {
+	//		y = platformHeight + halfHeight;
+	//		vy = 0;
+	//		_isOnPlatform = true;
+	//	}
+	//}
 }
 
-// below steps occur while isJumping, but step 1 & 4 occur while _isOnPlatform
-// low:1 -> JUMP:2 -> MED (TOP):3 -> LOW (ON LANDING):4 
+// below steps occur while _isJumping, but step 1 & 4 occur while _isOnPlatform
+// low:1 -> JUMP:2 -> MED (TOP):3 -> LOW (ON LANDING):4
 void Sophia::UpdateJump(DWORD dt) {
-	if (isJumping) {
-		if (jumpStep < 3) {
+	if (_isJumping) {
+		if (jumpStep < 2) {
 			elapsedJumpTime += dt;
 
 			if (elapsedJumpTime < SOPHIA_JUMP_STEP_TIME) {
 				jumpStep = 1;
 				return;
 			}
-
-			if (elapsedJumpTime < SOPHIA_JUMP_STEP_TIME * 2) {
+			else {
 				jumpStep = 2;
 				vy = SOPHIA_JUMP_SPEED;
 				_isOnPlatform = false;
+
+				// reset counter for step 4
+				elapsedJumpTime = 0;
+
 				return;
 			}
 
-			jumpStep = 3;
-			elapsedJumpTime = 0;
+			return;
 		}
-		else if (_isOnPlatform) {
-			elapsedJumpTime += dt;
-			jumpStep = 4;
-			if (elapsedJumpTime > SOPHIA_JUMP_STEP_TIME) {
-				isJumping = false;
-			}
+
+		// check for step 2 and 3
+		switch (jumpStep) {
+			case 2:
+				// Update Vy when jumping
+				vy -= SOPHIA_GRAVITATIONAL_ACCELERATION * dt;
+
+				// TODO: check if wheels touch higher ground
+				// 
+				//
+
+				if (vy < SOPHIA_MAX_SPEED_WHEN_TOP_FRAME) {
+					jumpStep = 3;
+					return;
+				}
+
+				return;
+
+			case 3: 
+				vy -= SOPHIA_GRAVITATIONAL_ACCELERATION * dt;
+
+				return;
+
+			case 4:
+				elapsedJumpTime += dt;
+				_isOnPlatform = true;
+
+				if (elapsedJumpTime > SOPHIA_JUMP_STEP_TIME) {
+					_isJumping = false;
+				}
+
+				return;
 		}
 	}
 }
 
+void Sophia::CheckLandingWhileJumping() {
+	if (_isJumping && jumpStep>1) {
+		halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
+		spTempHeightDelta = y - halfHeight - platformHeight;
+
+		if (spTempHeightDelta < 1) {
+			// change jumpStep for next frame
+			jumpStep = 4;
+
+			// maybe frame will cause landing error, fix landing
+			y -= spTempHeightDelta;
+		}
+	}
+}
+
+void Sophia::UpdateSpritesSet() {
+	if (_isJumping) {
+		switch (jumpStep) {
+			case 1: 
+				spriteRowSetID = ID_SPRITE_SOPHIA_LOW;
+				break;
+			case 2: 
+				spriteRowSetID = (isFrameRot ? ID_SPRITE_SOPHIA_JUMP_ROT : ID_SPRITE_SOPHIA_JUMP);
+				break;
+			case 3: 
+				spriteRowSetID = (isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED) ;
+				break;
+			case 4: 
+				spriteRowSetID = ID_SPRITE_SOPHIA_LOW;
+				break;
+		}
+
+		return;
+	}
+
+	spriteRowSetID = _isOnPlatform ? (
+		_isPointingUp ?
+		SwitchPointingUpFrame()
+		:
+		(isOscillationHeightLow ?
+			(isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED) :
+			(isFrameRot ? ID_SPRITE_SOPHIA_HIGH_ROT : ID_SPRITE_SOPHIA_HIGH)
+			)
+		)
+
+		: ID_SPRITE_SOPHIA_HIGH;
+}
+
 void Sophia::SetJump() {
-	isJumping = true;
+	_isJumping = true;
 	jumpStep = 0;
 	elapsedJumpTime = 0;
 }

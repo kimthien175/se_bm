@@ -12,6 +12,7 @@
 
 #define SOPHIA_JUMP_STEP_TIME 50
 #define SOPHIA_JUMP_SPEED 0.45f
+#define SOPHIA_MAX_SPEED_WHEN_TOP_FRAME 0.2f
 
 #define SOPHIA_HORIZONTAL_SPEED 0.2f
 #define SOPHIA_HORIZONTAL_ACCELERATION 0.0005f
@@ -68,9 +69,12 @@ class Sophia : public CGameObject {
 
 
 	void UpdateJump(DWORD dt);
-	bool isJumping = false;
+	void CheckLandingWhileJumping();
+	bool _isJumping = false;
 	DWORD elapsedJumpTime = 0;
 	int jumpStep = 0;
+
+	void UpdateSpritesSet();
 
 public:
 	Sophia(float x, float y) : CGameObject(x, y) {
@@ -87,6 +91,7 @@ public:
 	bool isLookingLeft() { return _isLookingLeft; }
 	bool isRotating() { return _isRotating; }
 	bool isOnPlatform() { return _isOnPlatform; }
+	bool isJumping() { return _isJumping; }
 
 	// Rotate
 	void SetRotation();
