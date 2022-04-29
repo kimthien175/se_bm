@@ -1,5 +1,7 @@
 #include "Sophia.h"
 #include "debug.h"
+#include "BMScene.h"
+#include "Bullet.h"
 
 void Sophia::GetBoundingBox(float& left, float& top, float& right, float& bottom) {}
 
@@ -20,18 +22,18 @@ void Sophia::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects) {
 
 			break;
 
-		case SOPHIA_STATE_STOP_ACCELERATING:
-			if (isMovingLeft()) {
-				vx += SOPHIA_HORIZONTAL_ACCELERATION * dt;
-				if (vx > 0) vx = 0;
-			}
-			else if (isMovingRight()) {
-				vx -= SOPHIA_HORIZONTAL_ACCELERATION * dt;
-				if (vx < 0) vx = 0;
-			}
+			// need to seperate to 2 states: stop_left, stop_right
+		case SOPHIA_STATE_STOP_ACCELERATING_LEFT:
+			vx += SOPHIA_HORIZONTAL_ACCELERATION * dt;
+			if (vx > 0) vx = 0;
+			break;
+
+		case SOPHIA_STATE_STOP_ACCELERATING_RIGHT:
+			vx -= SOPHIA_HORIZONTAL_ACCELERATION * dt;
+			if (vx < 0) vx = 0;
 			break;
 	}
-	
+
 	UpdateActions(dt);
 
 	x += vx * dt;
@@ -194,6 +196,8 @@ void Sophia::UpdateActions(DWORD dt) {
 	UpdatePointingUp(dt);
 
 	UpdateJump(dt);
+
+	UpdateFire(dt);
 }
 
 int Sophia::SwitchPointingUpFrame() {
@@ -215,24 +219,15 @@ int Sophia::SwitchPointingUpFrame() {
 	return ID_SPRITE_SOPHIA_HIGH;
 }
 
-float spTempHeightDelta;
-
 void Sophia::FixStandingOnPlatform() {
 	if (_isOnPlatform) {
 		halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
 		spTempHeightDelta = y - halfHeight - platformHeight;
-		if (abs(spTempHeightDelta) >=1) {
+		if (abs(spTempHeightDelta) >= 1) {
 			//y = platformHeight + halfHeight;
 			y -= spTempHeightDelta;
 		}
 	}
-	//else {
-	//	if (floor(y - halfHeight) - platformHeight < -1) {
-	//		y = platformHeight + halfHeight;
-	//		vy = 0;
-	//		_isOnPlatform = true;
-	//	}
-	//}
 }
 
 // below steps occur while _isJumping, but step 1 & 4 occur while _isOnPlatform
@@ -277,7 +272,7 @@ void Sophia::UpdateJump(DWORD dt) {
 
 				return;
 
-			case 3: 
+			case 3:
 				vy -= SOPHIA_GRAVITATIONAL_ACCELERATION * dt;
 
 				return;
@@ -296,7 +291,7 @@ void Sophia::UpdateJump(DWORD dt) {
 }
 
 void Sophia::CheckLandingWhileJumping() {
-	if (_isJumping && jumpStep>1) {
+	if (_isJumping && jumpStep > 1) {
 		halfHeight = (FLOAT)(CSprites::GetInstance()->Get(spriteRowSetID)->getHeight()) / 2.0f;
 		spTempHeightDelta = y - halfHeight - platformHeight;
 
@@ -310,19 +305,36 @@ void Sophia::CheckLandingWhileJumping() {
 	}
 }
 
+void Sophia::UpdateFire(DWORD dt) {
+	if (isFireAllowed) {
+
+	}
+	else {
+		notFireAllowedCounter += dt;
+
+		if (notFireAllowedCounter < SOPHIA_FIRE_DELAY_TIME) {
+			isFireAllowed = false;
+		}
+		else {
+			isFireAllowed = true;
+			notFireAllowedCounter = 0;
+		}
+	}
+}
+
 void Sophia::UpdateSpritesSet() {
 	if (_isJumping) {
 		switch (jumpStep) {
-			case 1: 
+			case 1:
 				spriteRowSetID = ID_SPRITE_SOPHIA_LOW;
 				break;
-			case 2: 
+			case 2:
 				spriteRowSetID = (isFrameRot ? ID_SPRITE_SOPHIA_JUMP_ROT : ID_SPRITE_SOPHIA_JUMP);
 				break;
-			case 3: 
-				spriteRowSetID = (isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED) ;
+			case 3:
+				spriteRowSetID = (isFrameRot ? ID_SPRITE_SOPHIA_MED_ROT : ID_SPRITE_SOPHIA_MED);
 				break;
-			case 4: 
+			case 4:
 				spriteRowSetID = ID_SPRITE_SOPHIA_LOW;
 				break;
 		}
@@ -356,4 +368,31 @@ void Sophia::UpdateOscillationHeight(DWORD dt) {
 
 void Sophia::Render() {
 	CSprites::GetInstance()->Get(_isLookingLeft ? (spriteRowSetID + wheelIndex) : (spriteRowSetID + wheelIndex + 4))->Draw(x, y);
+}
+
+void Sophia::Fire() {
+	if (isFireAllowed) {
+		if (_isRotating) return;
+
+		if (_isPointingUp) {
+			if (pointingStep == 4) {
+				// shoot bullets with look-up direction
+				((BMScene*)CGame::GetInstance()->GetCurrentScene())->AddObject(new Bullet(x, y+10, 0, 1));
+				isFireAllowed = false;
+			}
+
+			return;
+		}
+
+		// shoot bullets with horizontal direction
+		if (_isLookingLeft) {
+			((BMScene*)CGame::GetInstance()->GetCurrentScene())->AddObject(new Bullet(x-5, y+4, -1, 0));
+			isFireAllowed = false;
+		}
+		else {
+			((BMScene*)CGame::GetInstance()->GetCurrentScene())->AddObject(new Bullet(x+5, y+4, 1, 0));
+			isFireAllowed = false;
+		}
+
+	}
 }

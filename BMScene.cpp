@@ -179,8 +179,12 @@ void BMScene::Update(DWORD dt) {
 	//coObjects.push_back(paddle0);
 	//coObjects.push_back(paddle1);
 
-	//ball->Update(dt, &coObjects);
 	sophia->Update(dt);
+
+	for (int i = 0; i < objects.size(); i++) {
+		if (!objects[i]->IsDeleted())
+			objects[i]->Update(dt);
+	}
 
 	CGame::GetInstance()->SetCamPos(0, 0);
 
@@ -193,7 +197,18 @@ void BMScene::Render() {
 
 	// render game obj
 	sophia->Render();
-	
+
+	for (int i = 0; i < objects.size(); i++) {
+		if (!objects[i]->IsDeleted())
+			objects[i]->Render();
+	}
+
+	//float x, y;
+	//sophia->GetPosition(x, y);
+	//Bullet* bullet = new Bullet(x, y, 1, 0);
+	//
+
+
 	//CGame* g = CGame::GetInstance();
 	//float cx, cy;
 	//g->GetCamPos(cx, cy);
@@ -214,12 +229,22 @@ void BMScene::Render() {
 
 void BMScene::Unload() {
 	if (map) delete map;
+	if (sophia) delete sophia;
+
+	PurgeDeletedObjects();
 }
 
-void BMScene::Clear() {}
+//void BMScene::Clear() {}
 
-void BMScene::PurgeDeletedObjects() {}
-
-bool BMScene::IsGameObjectDeleted(const LPGAMEOBJECT& o) {
-	return o == NULL;
+void BMScene::PurgeDeletedObjects() {
+	for (int i = 0; i < objects.size(); i++) {
+		if (objects[i]->IsDeleted()) {
+			delete objects[i];
+			objects[i] = NULL;
+		}
+	}
 }
+
+//bool BMScene::IsGameObjectDeleted(const LPGAMEOBJECT& o) {
+//	return o->IsDeleted();
+//}

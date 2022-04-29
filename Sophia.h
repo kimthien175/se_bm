@@ -18,17 +18,15 @@
 #define SOPHIA_HORIZONTAL_ACCELERATION 0.0005f
 #define SOPHIA_GRAVITATIONAL_ACCELERATION 0.002f
 
-//#define SOPHIA_STATE_IDLE 0
+#define SOPHIA_FIRE_DELAY_TIME 200
 
 //MONO
 #define SOPHIA_STATE_ACCELERATE_LEFT 1
 #define SOPHIA_STATE_ACCELERATE_RIGHT 2
 //#define SOPHIA_STATE_LOOK_UP
-#define SOPHIA_STATE_STOP_ACCELERATING 4
+#define SOPHIA_STATE_STOP_ACCELERATING_LEFT 3
+#define SOPHIA_STATE_STOP_ACCELERATING_RIGHT 4
 
-//DOUBLE
-//#define SOPHIA_STATE_MOVE_LEFT_LOOK_UP
-//#define SOPHIA_STATE_MOVE_RIGHT_LOOK_UP
 
 class Sophia : public CGameObject {
 	bool _isOnPlatform = true;
@@ -65,6 +63,8 @@ class Sophia : public CGameObject {
 	void UpdatePointingUp(DWORD dt);
 
 	int SwitchPointingUpFrame();
+
+	float spTempHeightDelta;
 	void FixStandingOnPlatform();
 
 
@@ -73,6 +73,12 @@ class Sophia : public CGameObject {
 	bool _isJumping = false;
 	DWORD elapsedJumpTime = 0;
 	int jumpStep = 0;
+
+	bool isFireAllowed = true;
+	DWORD notFireAllowedCounter = 0;
+	float gunX = 0;
+	float gunY = 0;
+	void UpdateFire(DWORD dt);
 
 	void UpdateSpritesSet();
 
@@ -102,5 +108,8 @@ public:
 
 	// Jump
 	void SetJump();
+
+	// Fire
+	void Fire();
 };
 

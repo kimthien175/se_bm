@@ -3,6 +3,7 @@
 #include "Collision.h"
 #include <string>
 #include "Sophia.h"
+#include "Bullet.h"
 
 class BMScene : public CScene {
 protected:
@@ -18,6 +19,8 @@ protected:
 
 	Sophia* sophia;
 
+	vector<LPGAMEOBJECT> objects;
+
 public:
 	BMScene(int id, LPCWSTR filePath);
 
@@ -26,15 +29,15 @@ public:
 	virtual void Render();
 	virtual void Unload();
 
-	//LPGAMEOBJECT GetBall() { return ball; }
-	//LPGAMEOBJECT GetPaddle0() { return paddle0; }
-	//LPGAMEOBJECT GetPaddle1() { return paddle1; }
-
-	void Clear();
+	//void Clear();
 	void PurgeDeletedObjects();
 
-	static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
+	//static bool IsGameObjectDeleted(const LPGAMEOBJECT& o);
 
 	Sophia* GetSophia() { return sophia; }
+
+	void AddObject(LPGAMEOBJECT object) { 
+		objects.push_back(object);
+	}
 };
 

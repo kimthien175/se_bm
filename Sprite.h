@@ -25,6 +25,7 @@ public:
 	void Draw(float x, float y);
 
 	int getHeight() { return spriteHeight; }
+	void getSize(int& height, int& width) { height = spriteHeight; width = spriteWidth; }
 };
 
 typedef CSprite* LPSPRITE;

@@ -13,3 +13,4 @@ start	1
 1	bm\map-3a.png
 2	bm\sophia.png
 3	bm\sophia_top_low_edited.png
+4	bm\bullets.png

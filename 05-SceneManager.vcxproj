@@ -151,6 +151,7 @@
     <ClCompile Include="BMKeyHandler.cpp" />
     <ClCompile Include="BMMap.cpp" />
     <ClCompile Include="BMScene.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="debug.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="BMAssetsIDs.h" />
     <ClInclude Include="BMKeyHandler.h" />
     <ClInclude Include="BMScene.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="debug.h" />

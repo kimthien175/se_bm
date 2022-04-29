@@ -18,12 +18,16 @@ void BMKeyHandler::KeyState(BYTE* states) {
 	}
 
 	if (game->IsKeyDown(DIK_UP)) {
-		sophia->AcceleratePointingUp();
+		if (!sophia->isJumping()) sophia->AcceleratePointingUp();
 	}
 
 	if (game->IsKeyDown(DIK_SPACE)) {
 		if (!sophia->isJumping()) 
 			sophia->SetJump();
+	}
+
+	if (game->IsKeyDown(DIK_X)) {
+		sophia->Fire();
 	}
 }
 
@@ -35,10 +39,10 @@ void BMKeyHandler::OnKeyUp(int KeyCode) {
 
 	switch (KeyCode) {
 		case DIK_RIGHT:
-			if (sophia->isMovingRight()) sophia->SetState(SOPHIA_STATE_STOP_ACCELERATING);
+			if (sophia->isMovingRight()) sophia->SetState(SOPHIA_STATE_STOP_ACCELERATING_RIGHT);
 			break;
 		case DIK_LEFT:
-			if (sophia->isMovingLeft()) sophia->SetState(SOPHIA_STATE_STOP_ACCELERATING);
+			if (sophia->isMovingLeft()) sophia->SetState(SOPHIA_STATE_STOP_ACCELERATING_LEFT);
 			break;
 		case DIK_UP:
 			sophia->RelasePointingUp();

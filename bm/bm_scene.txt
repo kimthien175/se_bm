@@ -1,6 +1,7 @@
 # list of object assets to load in this scene
 [ASSETS]
 bm\sophia.txt
+bm\bullets.txt
 
 #
 [OBJECTS]

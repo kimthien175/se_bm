@@ -73,6 +73,9 @@
     <ClCompile Include="Sophia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -133,6 +136,9 @@
       <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
     <ClInclude Include="Sophia.h">
+      <Filter>Header Files\Games\BlasterMaster</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
       <Filter>Header Files\Games\BlasterMaster</Filter>
     </ClInclude>
   </ItemGroup>
